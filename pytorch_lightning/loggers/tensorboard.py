@@ -260,7 +260,7 @@ class TensorBoardLogger(LightningLoggerBase):
         return self._name
 
     @property
-    def version(self) -> Union[int, str]:
+    def version(self) -> int:
         if self._version is None:
             self._version = self._get_next_version()
         return self._version

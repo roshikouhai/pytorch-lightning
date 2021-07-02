@@ -1,3 +1,4 @@
+import gc
 import os
 
 import torch
@@ -88,6 +89,7 @@ def run():
 
         print(f"iteration {i}, after test, rank {trainer.global_rank}, {os.environ.get('PL_EXP_VERSION')}")
         del trainer, model
+        gc.collect()
 
 
 if __name__ == '__main__':

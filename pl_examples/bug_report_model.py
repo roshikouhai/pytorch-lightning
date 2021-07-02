@@ -81,7 +81,6 @@ def run():
         trainer.fit(model, train_data, val_data)
         print(f"iteration {i}, after fit, rank {trainer.global_rank}, {os.environ.get('PL_EXP_VERSION')}")
 
-
         trainer.test(test_dataloaders=test_data)
 
         trainer.accelerator.barrier()

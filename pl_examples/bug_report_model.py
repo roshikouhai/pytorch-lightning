@@ -1,6 +1,8 @@
 import os
+
 import torch
 from torch.utils.data import Dataset
+
 from pytorch_lightning import LightningModule, Trainer
 
 
@@ -72,12 +74,7 @@ def run():
 
     for _ in range(2):
         model = BoringModel()
-        trainer = Trainer(
-            max_epochs=1,
-            progress_bar_refresh_rate=20,
-            accelerator="ddp",
-            gpus=2
-        )
+        trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=20, accelerator="ddp", gpus=2)
         trainer.fit(model, train_data, val_data)
         trainer.test(test_dataloaders=test_data)
         print(os.environ.get("PL_EXP_VERSION"))

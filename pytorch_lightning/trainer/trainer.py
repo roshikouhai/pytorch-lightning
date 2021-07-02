@@ -13,6 +13,7 @@
 # limitations under the License.
 """Trainer to automate the training."""
 import logging
+import os
 import traceback
 import warnings
 from datetime import timedelta
@@ -1212,3 +1213,6 @@ class Trainer(
                 "IPU available but not used. Set the `ipus` flag in your trainer"
                 " `Trainer(ipus=8)` or script `--ipus=8`."
             )
+
+    def __del__(self):
+        del os.environ["PL_EXP_VERSION"]

@@ -72,12 +72,16 @@ def run():
     val_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
     test_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
 
-    for _ in range(2):
+    for i in range(2):
+
         model = BoringModel()
         trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=20, accelerator="ddp", gpus=2)
+        print(f"iteration {i}, before fit, rank {trainer.global_rank}, {os.environ.get('PL_EXP_VERSION')}")
+
         trainer.fit(model, train_data, val_data)
+        print(f"iteration {i}, after fit, rank {trainer.global_rank}, {os.environ.get('PL_EXP_VERSION')}")
         trainer.test(test_dataloaders=test_data)
-        print(os.environ.get("PL_EXP_VERSION"))
+        print(f"iteration {i}, after test, rank {trainer.global_rank}, {os.environ.get('PL_EXP_VERSION')}")
         del trainer, model
 
 

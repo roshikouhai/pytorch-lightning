@@ -1,8 +1,6 @@
 import os
-
 import torch
-from torch.utils.data import DataLoader, Dataset
-
+from torch.utils.data import Dataset
 from pytorch_lightning import LightningModule, Trainer
 
 
@@ -28,39 +26,62 @@ class BoringModel(LightningModule):
     def forward(self, x):
         return self.layer(x)
 
+    def loss(self, batch, prediction):
+        # An arbitrary loss to have a loss that updates the model weights during `Trainer.fit` calls
+        return torch.nn.functional.mse_loss(prediction, torch.ones_like(prediction))
+
     def training_step(self, batch, batch_idx):
-        loss = self(batch).sum()
-        self.log("train_loss", loss)
+        output = self.layer(batch)
+        loss = self.loss(batch, output)
         return {"loss": loss}
 
+    def training_step_end(self, training_step_outputs):
+        return training_step_outputs
+
+    def training_epoch_end(self, outputs) -> None:
+        print(f"rank {self.trainer.global_rank} exp version: {os.environ.get('PL_EXP_VERSION')}")
+        torch.stack([x["loss"] for x in outputs]).mean()
+
     def validation_step(self, batch, batch_idx):
-        loss = self(batch).sum()
-        self.log("valid_loss", loss)
+        output = self.layer(batch)
+        loss = self.loss(batch, output)
+        return {"x": loss}
+
+    def validation_epoch_end(self, outputs) -> None:
+        torch.stack([x['x'] for x in outputs]).mean()
 
     def test_step(self, batch, batch_idx):
-        loss = self(batch).sum()
-        self.log("test_loss", loss)
+        output = self.layer(batch)
+        loss = self.loss(batch, output)
+        self.log('fake_test_acc', loss)
+        return {"y": loss}
+
+    def test_epoch_end(self, outputs) -> None:
+        torch.stack([x["y"] for x in outputs]).mean()
 
     def configure_optimizers(self):
-        return torch.optim.SGD(self.layer.parameters(), lr=0.1)
+        optimizer = torch.optim.SGD(self.layer.parameters(), lr=0.1)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1)
+        return [optimizer], [lr_scheduler]
 
 
 def run():
-    train_data = DataLoader(RandomDataset(32, 64), batch_size=2)
-    val_data = DataLoader(RandomDataset(32, 64), batch_size=2)
-    test_data = DataLoader(RandomDataset(32, 64), batch_size=2)
+    train_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
+    val_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
+    test_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
 
-    model = BoringModel()
-    trainer = Trainer(
-        default_root_dir=os.getcwd(),
-        limit_train_batches=1,
-        limit_val_batches=1,
-        num_sanity_val_steps=0,
-        max_epochs=1,
-        weights_summary=None,
-    )
-    trainer.fit(model, train_dataloaders=train_data, val_dataloaders=val_data)
-    trainer.test(model, dataloaders=test_data)
+    for _ in range(2):
+        model = BoringModel()
+        trainer = Trainer(
+            max_epochs=1,
+            progress_bar_refresh_rate=20,
+            accelerator="ddp",
+            gpus=2
+        )
+        trainer.fit(model, train_data, val_data)
+        trainer.test(test_dataloaders=test_data)
+        print(os.environ.get("PL_EXP_VERSION"))
+        del trainer, model
 
 
 if __name__ == '__main__':

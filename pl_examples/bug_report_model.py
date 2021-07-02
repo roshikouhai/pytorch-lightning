@@ -41,6 +41,7 @@ class BoringModel(LightningModule):
         return training_step_outputs
 
     def training_epoch_end(self, outputs) -> None:
+        self.trainer.accelerator.barrier()
         print(f"rank {self.trainer.global_rank} exp version: {os.environ.get('PL_EXP_VERSION')}", self.logger.version)
         torch.stack([x["loss"] for x in outputs]).mean()
 
@@ -75,7 +76,7 @@ def run():
     for i in range(2):
 
         model = BoringModel()
-        trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=20, accelerator="ddp", gpus=2)
+        trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None)
         print(f"iteration {i}, before fit, rank {trainer.global_rank}, {os.environ.get('PL_EXP_VERSION')}")
 
         trainer.fit(model, train_data, val_data)

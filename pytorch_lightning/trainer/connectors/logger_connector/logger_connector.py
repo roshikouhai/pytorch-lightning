@@ -68,7 +68,7 @@ class LoggerConnector:
 
     def configure_logger(self, logger: Union[bool, Iterable, LightningLoggerBase]) -> None:
         if logger is True:
-            version = os.environ.pop("PL_EXP_VERSION", self.trainer.slurm_job_id)
+            version = os.environ.get("PL_EXP_VERSION", self.trainer.slurm_job_id)
             try:
                 version = int(version)
             except (ValueError, TypeError):

@@ -1215,4 +1215,4 @@ class Trainer(
             )
 
     def __del__(self):
-        del os.environ["PL_EXP_VERSION"]
+        os.environ.pop("PL_EXP_VERSION", None)

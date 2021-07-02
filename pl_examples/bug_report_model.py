@@ -39,7 +39,7 @@ class BoringModel(LightningModule):
         return training_step_outputs
 
     def training_epoch_end(self, outputs) -> None:
-        print(f"rank {self.trainer.global_rank} exp version: {os.environ.get('PL_EXP_VERSION')}")
+        print(f"rank {self.trainer.global_rank} exp version: {os.environ.get('PL_EXP_VERSION')}", self.logger.version)
         torch.stack([x["loss"] for x in outputs]).mean()
 
     def validation_step(self, batch, batch_idx):

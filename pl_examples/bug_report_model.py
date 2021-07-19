@@ -1,5 +1,6 @@
 import gc
 import os
+import time
 
 import torch
 from torch.utils.data import Dataset
@@ -90,7 +91,7 @@ def run():
             f"iteration {i}, before fit, rank {trainer.global_rank}, "
             f"logger: {trainer.logger.version}, "
             f"env: {os.environ.get('PL_EXP_VERSION')}"
-            f"logdir: {trainer.log_dir}"
+            # f"logdir: {trainer.log_dir}"
             f"save_dir: {trainer.logger.save_dir}"
         )
 
@@ -104,8 +105,10 @@ def run():
         )
 
         trainer.test(test_dataloaders=test_data)
-
-        trainer.accelerator.barrier()
+        # trainer.accelerator.barrier()
+        if trainer.global_rank == 1:
+            # make sure rank 0 is faster
+            time.sleep(1)
 
         print(
             f"iteration {i}, after test, rank {trainer.global_rank}, "
@@ -114,8 +117,6 @@ def run():
             f"logdir: {trainer.log_dir}"
             f"save_dir: {trainer.logger.save_dir}"
         )
-        del trainer, model
-        gc.collect()
 
 
 if __name__ == '__main__':

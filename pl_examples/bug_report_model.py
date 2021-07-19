@@ -84,16 +84,22 @@ def run():
 
         model = BoringModel()
         trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None)
-        print(f"iteration {i}, before fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}")
+        print(
+            f"iteration {i}, before fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
+        )
 
         trainer.fit(model, train_data, val_data)
-        print(f"iteration {i}, after fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}")
+        print(
+            f"iteration {i}, after fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
+        )
 
         trainer.test(test_dataloaders=test_data)
 
         trainer.accelerator.barrier()
 
-        print(f"iteration {i}, after test, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}")
+        print(
+            f"iteration {i}, after test, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
+        )
         del trainer, model
         gc.collect()
 

@@ -5,6 +5,7 @@ import torch
 from torch.utils.data import Dataset
 
 from pytorch_lightning import LightningModule, Trainer
+from pytorch_lightning.loggers import TensorBoardLogger
 
 
 class RandomDataset(Dataset):
@@ -75,6 +76,11 @@ def run():
     test_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
 
     for i in range(2):
+
+        if i > 0:
+            logger = TensorBoardLogger(save_dir=".", name="lightning_logs")
+        else:
+            logger = None
 
         model = BoringModel()
         trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None)

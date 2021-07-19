@@ -1,3 +1,4 @@
+import argparse
 import gc
 import os
 import time
@@ -89,6 +90,13 @@ def run():
         trainer = Trainer(
             max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None, logger=logger
         )
+
+        if trainer.global_rank == 1:
+            # make sure rank 0 is faster
+            time.sleep(1)
+
+        trainer.logger.log_hyperparams(argparse.Namespace(a=2))
+
         print(
             f"iteration {i}, before fit, rank {trainer.global_rank}, "
             f"logger: {trainer.logger.version}, "

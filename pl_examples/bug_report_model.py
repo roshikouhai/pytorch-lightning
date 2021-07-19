@@ -80,7 +80,7 @@ def run():
         if i > 0:
             logger = TensorBoardLogger(save_dir=".", name="lightning_logs")
         else:
-            logger = None
+            logger = True
 
         model = BoringModel()
         trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None,

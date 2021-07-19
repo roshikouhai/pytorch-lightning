@@ -118,7 +118,7 @@ def run():
             f"save_dir: {trainer.logger.log_dir} "
         )
 
-        with open(os.path.join(trainer.logger.log_dir, str(trainer.global_rank) + ".txt"), "w") as file:
+        with open(os.path.join(trainer.logger.log_dir, str(trainer.global_rank) + "-" + str(i) + ".txt"), "w") as file:
             file.write(str(trainer.global_rank))
 
 

@@ -90,18 +90,18 @@ def run():
         print(
             f"iteration {i}, before fit, rank {trainer.global_rank}, "
             f"logger: {trainer.logger.version}, "
-            f"env: {os.environ.get('PL_EXP_VERSION')}"
+            f"env: {os.environ.get('PL_EXP_VERSION')} "
             # f"logdir: {trainer.log_dir}"
-            f"save_dir: {trainer.logger.save_dir}"
+            f"save_dir: {trainer.logger.log_dir} "
         )
 
         trainer.fit(model, train_data, val_data)
         print(
             f"iteration {i}, after fit, rank {trainer.global_rank}, "
             f"logger: {trainer.logger.version}, "
-            f"env: {os.environ.get('PL_EXP_VERSION')}"
-            f"logdir: {trainer.log_dir}"
-            f"save_dir: {trainer.logger.save_dir}"
+            f"env: {os.environ.get('PL_EXP_VERSION')} "
+            f"logdir: {trainer.log_dir} "
+            f"save_dir: {trainer.logger.log_dir} "
         )
 
         trainer.test(test_dataloaders=test_data)
@@ -113,9 +113,9 @@ def run():
         print(
             f"iteration {i}, after test, rank {trainer.global_rank}, "
             f"logger: {trainer.logger.version}, "
-            f"env: {os.environ.get('PL_EXP_VERSION')}"
-            f"logdir: {trainer.log_dir}"
-            f"save_dir: {trainer.logger.save_dir}"
+            f"env: {os.environ.get('PL_EXP_VERSION')} "
+            f"logdir: {trainer.log_dir} "
+            f"save_dir: {trainer.logger.log_dir} "
         )
 
 

@@ -75,7 +75,7 @@ def run():
     val_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
     test_data = torch.utils.data.DataLoader(RandomDataset(32, 64), batch_size=2, num_workers=0)
 
-    for i in range(2):
+    for i in range(3):
 
         if i > 0:
             logger = TensorBoardLogger(save_dir=".", name="lightning_logs")
@@ -86,12 +86,20 @@ def run():
         trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None,
                           logger=logger)
         print(
-            f"iteration {i}, before fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
+            f"iteration {i}, before fit, rank {trainer.global_rank}, "
+            f"logger: {trainer.logger.version}, "
+            f"env: {os.environ.get('PL_EXP_VERSION')}"
+            f"logdir: {trainer.log_dir}"
+            f"save_dir: {trainer.logger.save_dir}"
         )
 
         trainer.fit(model, train_data, val_data)
         print(
-            f"iteration {i}, after fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
+            f"iteration {i}, after fit, rank {trainer.global_rank}, "
+            f"logger: {trainer.logger.version}, "
+            f"env: {os.environ.get('PL_EXP_VERSION')}"
+            f"logdir: {trainer.log_dir}"
+            f"save_dir: {trainer.logger.save_dir}"
         )
 
         trainer.test(test_dataloaders=test_data)
@@ -99,7 +107,11 @@ def run():
         trainer.accelerator.barrier()
 
         print(
-            f"iteration {i}, after test, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
+            f"iteration {i}, after test, rank {trainer.global_rank}, "
+            f"logger: {trainer.logger.version}, "
+            f"env: {os.environ.get('PL_EXP_VERSION')}"
+            f"logdir: {trainer.log_dir}"
+            f"save_dir: {trainer.logger.save_dir}"
         )
         del trainer, model
         gc.collect()

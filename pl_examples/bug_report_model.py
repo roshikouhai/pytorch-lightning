@@ -83,7 +83,8 @@ def run():
             logger = None
 
         model = BoringModel()
-        trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None)
+        trainer = Trainer(max_epochs=1, progress_bar_refresh_rate=0, accelerator="ddp", gpus=2, weights_summary=None,
+                          logger=logger)
         print(
             f"iteration {i}, before fit, rank {trainer.global_rank}, logger: {trainer.logger.version}, env: {os.environ.get('PL_EXP_VERSION')}"
         )

@@ -1292,5 +1292,3 @@ class Trainer(
         file_path = os.path.join(self.default_root_dir, ".pl_auto_save.ckpt")
         self.save_checkpoint(file_path)
 
-    def __del__(self):
-        os.environ.pop("PL_EXP_VERSION", None)

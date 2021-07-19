@@ -78,8 +78,10 @@ def run():
 
     for i in range(3):
 
-        if i > 0:
+        if i == 0:
             logger = TensorBoardLogger(save_dir=".", name="lightning_logs")
+        elif i == 1:
+            logger = TensorBoardLogger(save_dir=".", name="lightning_logs", version=i)
         else:
             logger = True
 

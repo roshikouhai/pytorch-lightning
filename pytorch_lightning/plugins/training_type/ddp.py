@@ -217,9 +217,9 @@ class DDPPlugin(ParallelPlugin):
             env_copy = os.environ.copy()
             env_copy["LOCAL_RANK"] = f"{local_rank}"
 
-            if self.lightning_module.logger is not None:
-                # spawned processes must reference the same log dir, prevent auto-increment version
-                env_copy["PL_EXP_VERSION"] = str(self.lightning_module.logger.version)
+            # if self.lightning_module.logger is not None:
+            #     # spawned processes must reference the same log dir, prevent auto-increment version
+            #     env_copy["PL_EXP_VERSION"] = str(self.lightning_module.logger.version)
 
             # remove env var if global seed not set
             if os.environ.get("PL_GLOBAL_SEED") is None and "PL_GLOBAL_SEED" in env_copy:
